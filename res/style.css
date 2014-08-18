@@ -1,0 +1,9 @@
+.root {
+    -fx-background-color: black;
+}
+#ground {
+    -fx-fill: darkolivegreen;
+}
+#actor {
+    -fx-fill: ghostwhite;
+}
