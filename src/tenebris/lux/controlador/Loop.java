@@ -33,16 +33,17 @@ public class Loop  {
 	}
 	
 	private void handle() {
-		if (personagem.isCaindo() && (personagem.getBoundsInParent().getMaxY() + 20 > gameStage.buscarSuperficie(gameStage.getSolo(), personagem.getX()))) {
+		boolean caindo = personagem.isCaindo();
+		if (caindo && (personagem.getBoundsInParent().getMaxY() + 20 > gameStage.buscarSuperficie(gameStage.getSolo(), personagem.getX()))) {
 			personagem.pararQueda();
 		}
-		if (!personagem.isCaindo()) personagem.setLower(gameStage.buscarSuperficie(gameStage.getSolo(), personagem.getX()));
+		if (!caindo) personagem.setLower(gameStage.buscarSuperficie(gameStage.getSolo(), personagem.getX()));
 	}
 	
 	private void handlePressionado(KeyEvent e) {
 		Direction direcao = Direction.forKeyCode(e.getCode());
 		if (direcao != null) personagem.setDirecao(direcao);
-		if (e.getCode().equals(KeyCode.Z)) personagem.ascender(200);
+		if (e.getCode().equals(KeyCode.Z)) personagem.saltar(200);
 	}
 	
 	private void handleSoltado(KeyEvent e) {
