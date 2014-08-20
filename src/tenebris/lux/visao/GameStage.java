@@ -9,8 +9,8 @@ import javafx.scene.shape.Shape;
 import javafx.stage.Stage;
 
 public class GameStage extends Stage {
-	private static final double LARGURA = 1024;
-	private static final double ALTURA = 768;
+	private static final double LARGURA = 800;
+	private static final double ALTURA = 600;
 	private Solo solo = new Solo(LARGURA);
 	private AnchorPane root = new AnchorPane(solo);
 	private Scene cena = new Scene(root, LARGURA, ALTURA);

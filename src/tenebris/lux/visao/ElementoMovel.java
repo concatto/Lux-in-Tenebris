@@ -11,24 +11,20 @@ import tenebris.lux.controlador.Loop;
 import tenebris.lux.modelo.JumpInterpolator;
 
 public abstract class ElementoMovel extends Rectangle {
-	private static final double GRAVIDADE = 1;
-	private double aceleracao = 2;
+	private static final double VELOCIDADE_QUEDA = 14;
 	private Direction direcao = Direction.STOPPED;
 	private KeyFrame frameMovimento = new KeyFrame(Loop.FRAMES_PER_SECOND, e -> handleMovimento());
-	private KeyFrame frameQueda = new KeyFrame(Loop.FRAMES_PER_SECOND, e -> handleQueda());
+	private KeyFrame frameQueda = new KeyFrame(Loop.FRAMES_PER_SECOND, e -> moverBaixo());
 	private Timeline movimento = new Timeline(frameMovimento);
-	private Timeline queda = new Timeline(frameQueda);
+	private Timeline queda = new Timeline();
 	private Timeline ascensao = new Timeline();
+	private Timeline quedaConstante = new Timeline(frameQueda);
 	
 	public ElementoMovel() {
-		queda.setCycleCount(Timeline.INDEFINITE);
+		quedaConstante.setCycleCount(Timeline.INDEFINITE);
+		quedaConstante.setRate(VELOCIDADE_QUEDA);
 		movimento.setCycleCount(Timeline.INDEFINITE);
 		movimento.setRate(3);
-	}
-	
-	private void handleQueda() {
-		aceleracao += (Math.pow(aceleracao, GRAVIDADE) / 30);
-		moverBaixo();
 	}
 
 	public void setVelocidadeMovimento(double velocidade) {
@@ -44,19 +40,29 @@ public abstract class ElementoMovel extends Rectangle {
 	}
 	
 	public void ascender(double altura) {
-		KeyFrame frame = new KeyFrame(Duration.millis(800), e -> descender(), new KeyValue(yProperty(), getY() - altura, JumpInterpolator.getOut()));
+		KeyFrame frame = new KeyFrame(Duration.millis(400), e -> descender(altura), new KeyValue(yProperty(), getY() - altura, JumpInterpolator.OUT_CUBIC));
 		ascensao.getKeyFrames().clear();
 		ascensao.getKeyFrames().add(frame);
 		ascensao.playFromStart();
 	}
 	
-	public void descender() {
-		aceleracao = 2;
+	public void descender(double altura) {
+		altura = altura - 10;
+		KeyFrame frame = new KeyFrame(Duration.millis(500), e -> descensoConstante(), new KeyValue(yProperty(), getY() + altura, JumpInterpolator.IN_CUBIC));
+		queda.getKeyFrames().clear();
+		queda.getKeyFrames().add(frame);
 		queda.playFromStart();
 	}
 	
+	public void descensoConstante() {
+		quedaConstante.setRate(VELOCIDADE_QUEDA);
+		quedaConstante.playFromStart();
+	}
+	
 	public void pararQueda() {
-		queda.stop();
+		/* Forçar parada imediata */
+		quedaConstante.setRate(0);
+		quedaConstante.stop();
 	}
 	
 	public void setLower(double position) {
@@ -84,15 +90,11 @@ public abstract class ElementoMovel extends Rectangle {
 	}
 	
 	public void moverBaixo() {
-		setY(getY() + aceleracao);
-	}
-	
-	public double getAceleracao() {
-		return aceleracao;
+		setY(getY() + 1);
 	}
 	
 	public boolean isCaindo() {
-		return queda.getStatus().equals(Status.RUNNING);
+		return quedaConstante.getStatus().equals(Status.RUNNING);
 	}
 	
 	private void handleMovimento() {
