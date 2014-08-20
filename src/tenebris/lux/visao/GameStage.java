@@ -30,11 +30,15 @@ public class GameStage extends Stage {
 		elemento.setLower(buscarSuperficie(solo, elemento.getX()));
 	}
 	
-	private double buscarSuperficie(Shape superficie, double x) {
+	public double buscarSuperficie(Shape superficie, double x) {
 		Bounds bounds = superficie.getBoundsInParent();
 		for (int i = 0; i < ALTURA; i++) {
 			if (bounds.contains(x, i)) return i;
 		}
 		return 0;
+	}
+	
+	public Solo getSolo() {
+		return solo;
 	}
 }

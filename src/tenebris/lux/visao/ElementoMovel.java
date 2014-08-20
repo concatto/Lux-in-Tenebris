@@ -1,31 +1,61 @@
 package tenebris.lux.visao;
 
 import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.scene.shape.Rectangle;
+import javafx.util.Duration;
 import tenebris.lux.controlador.Direction;
 import tenebris.lux.controlador.Loop;
+import tenebris.lux.modelo.JumpInterpolator;
 
 public abstract class ElementoMovel extends Rectangle {
+	private static final double GRAVIDADE = 1;
+	private double aceleracao = 2;
 	private Direction direcao = Direction.STOPPED;
-	private KeyFrame frame = new KeyFrame(Loop.FRAMES_PER_SECOND, e -> handleMovimento());
-	private Timeline timeline = new Timeline(frame);
+	private KeyFrame frameMovimento = new KeyFrame(Loop.FRAMES_PER_SECOND, e -> handleMovimento());
+	private KeyFrame frameQueda = new KeyFrame(Loop.FRAMES_PER_SECOND, e -> handleQueda());
+	private Timeline movimento = new Timeline(frameMovimento);
+	private Timeline queda = new Timeline(frameQueda);
+	private Timeline ascensao = new Timeline();
 	
 	public ElementoMovel() {
-		timeline.setCycleCount(Timeline.INDEFINITE);
-		timeline.setRate(3);
+		queda.setCycleCount(Timeline.INDEFINITE);
+		movimento.setCycleCount(Timeline.INDEFINITE);
+		movimento.setRate(3);
 	}
 	
-	public void setVelocidade(double velocidade) {
-		timeline.setRate(velocidade);
+	private void handleQueda() {
+		aceleracao += (Math.pow(aceleracao, GRAVIDADE) / 10);
+		moverBaixo();
+	}
+
+	public void setVelocidadeMovimento(double velocidade) {
+		movimento.setRate(velocidade);
 	}
 	
 	public void ativar() {
-		timeline.playFromStart();
+		movimento.playFromStart();
 	}
 	
 	public void desativar() {
-		timeline.stop();
+		movimento.stop();
+	}
+	
+	public void ascender(double altura) {
+		KeyFrame frame = new KeyFrame(Duration.millis(400), e -> descender(), new KeyValue(yProperty(), getY() - altura, JumpInterpolator.getOut()));
+		ascensao.getKeyFrames().clear();
+		ascensao.getKeyFrames().add(frame);
+		ascensao.playFromStart();
+	}
+	
+	public void descender() {
+		aceleracao = 2;
+		queda.playFromStart();
+	}
+	
+	public void pararQueda() {
+		queda.stop();
 	}
 	
 	public void setLower(double position) {
@@ -46,6 +76,14 @@ public abstract class ElementoMovel extends Rectangle {
 	
 	public void moverDireita() {
 		setX(getX() + 1);
+	}
+	
+	public void moverCima() {
+		setY(getY() - 1);
+	}
+	
+	public void moverBaixo() {
+		setY(getY() + aceleracao);
 	}
 	
 	private void handleMovimento() {

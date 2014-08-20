@@ -3,6 +3,7 @@ package tenebris.lux.controlador;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.event.EventHandler;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.util.Duration;
 import tenebris.lux.visao.GameStage;
@@ -32,12 +33,16 @@ public class Loop  {
 	}
 	
 	private void handle() {
-		
+		if ((personagem.getY() + personagem.getHeight()) > gameStage.buscarSuperficie(gameStage.getSolo(), personagem.getX())) {
+			personagem.pararQueda();
+			personagem.setLower(gameStage.buscarSuperficie(gameStage.getSolo(), personagem.getX()));
+		}
 	}
 	
 	private void handlePressionado(KeyEvent e) {
 		Direction direcao = Direction.forKeyCode(e.getCode());
 		if (direcao != null) personagem.setDirecao(direcao);
+		if (e.getCode().equals(KeyCode.Z)) personagem.ascender(300);
 	}
 	
 	private void handleSoltado(KeyEvent e) {
