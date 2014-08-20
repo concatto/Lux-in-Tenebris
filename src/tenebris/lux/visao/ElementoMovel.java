@@ -1,5 +1,6 @@
 package tenebris.lux.visao;
 
+import javafx.animation.Animation.Status;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
@@ -26,7 +27,7 @@ public abstract class ElementoMovel extends Rectangle {
 	}
 	
 	private void handleQueda() {
-		aceleracao += (Math.pow(aceleracao, GRAVIDADE) / 10);
+		aceleracao += (Math.pow(aceleracao, GRAVIDADE) / 30);
 		moverBaixo();
 	}
 
@@ -43,7 +44,7 @@ public abstract class ElementoMovel extends Rectangle {
 	}
 	
 	public void ascender(double altura) {
-		KeyFrame frame = new KeyFrame(Duration.millis(400), e -> descender(), new KeyValue(yProperty(), getY() - altura, JumpInterpolator.getOut()));
+		KeyFrame frame = new KeyFrame(Duration.millis(800), e -> descender(), new KeyValue(yProperty(), getY() - altura, JumpInterpolator.getOut()));
 		ascensao.getKeyFrames().clear();
 		ascensao.getKeyFrames().add(frame);
 		ascensao.playFromStart();
@@ -84,6 +85,14 @@ public abstract class ElementoMovel extends Rectangle {
 	
 	public void moverBaixo() {
 		setY(getY() + aceleracao);
+	}
+	
+	public double getAceleracao() {
+		return aceleracao;
+	}
+	
+	public boolean isCaindo() {
+		return queda.getStatus().equals(Status.RUNNING);
 	}
 	
 	private void handleMovimento() {

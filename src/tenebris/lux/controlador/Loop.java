@@ -33,10 +33,10 @@ public class Loop  {
 	}
 	
 	private void handle() {
-		if ((personagem.getY() + personagem.getHeight()) > gameStage.buscarSuperficie(gameStage.getSolo(), personagem.getX())) {
+		if ((personagem.getY() + personagem.getHeight() + personagem.getAceleracao()) > gameStage.buscarSuperficie(gameStage.getSolo(), personagem.getX())) {
 			personagem.pararQueda();
-			personagem.setLower(gameStage.buscarSuperficie(gameStage.getSolo(), personagem.getX()));
 		}
+		if (!personagem.isCaindo()) personagem.setLower(gameStage.buscarSuperficie(gameStage.getSolo(), personagem.getX()));
 	}
 	
 	private void handlePressionado(KeyEvent e) {
