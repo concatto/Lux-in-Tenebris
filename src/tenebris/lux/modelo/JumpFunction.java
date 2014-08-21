@@ -1,9 +1,9 @@
 package tenebris.lux.modelo;
 
-import javafx.animation.Animation.Status;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
+import javafx.animation.Animation.Status;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.util.Duration;
@@ -47,10 +47,19 @@ public class JumpFunction {
 	public void stopFall() {
 		fall.setRate(0);
 		fall.stop();
+		descent.setRate(0);
 	}
 	
 	public boolean isFalling() {
-		return fall.getStatus().equals(Status.RUNNING);
+		return fall.getCurrentRate() > 0;
+	}
+	
+	public boolean isDescending() {
+		return descent.getCurrentRate() > 0;
+	}
+	
+	public boolean isAscending() {
+		return ascent.getStatus().equals(Status.RUNNING);
 	}
 	
 	private void createAndPlay(Timeline timeline, double duration, double amount, boolean isAscent) {
@@ -62,6 +71,8 @@ public class JumpFunction {
 		KeyValue value = new KeyValue(handledElement.yProperty(), targetAmount, interpolator);
 		KeyFrame frame = new KeyFrame(Duration.millis(duration), finish, value);
 		
+		timeline.stop();
+		timeline.setRate(1);
 		timeline.getKeyFrames().set(0, frame);
 		timeline.playFromStart();
 	}

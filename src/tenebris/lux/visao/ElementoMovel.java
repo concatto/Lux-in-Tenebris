@@ -2,12 +2,11 @@ package tenebris.lux.visao;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.scene.shape.Rectangle;
 import tenebris.lux.controlador.Direction;
 import tenebris.lux.controlador.Loop;
 import tenebris.lux.modelo.JumpFunction;
 
-public abstract class ElementoMovel extends Rectangle {
+public abstract class ElementoMovel extends Elemento {
 	private Direction direcao = Direction.STOPPED;
 	private KeyFrame frameMovimento = new KeyFrame(Loop.FRAMES_PER_SECOND, e -> handleMovimento());
 	private Timeline movimento = new Timeline(frameMovimento);
@@ -34,16 +33,16 @@ public abstract class ElementoMovel extends Rectangle {
 		salto.ascend(altura);
 	}
 	
+	public void descer(double altura) {
+		salto.descend(altura);
+	}
+	
 	public void cair() {
 		salto.fall();
 	}
 	
 	public void pararQueda() {
 		salto.stopFall();
-	}
-	
-	public void setLower(double position) {
-		setY(position - getHeight());
 	}
 	
 	public void setDirecao(Direction direcao) {
@@ -74,7 +73,16 @@ public abstract class ElementoMovel extends Rectangle {
 		return salto.isFalling();
 	}
 	
+	public boolean isDescendo() {
+		return salto.isDescending();
+	}
+	
+	public boolean isSubindo() {
+		return salto.isAscending();
+	}
+	
 	private void handleMovimento() {
+		if (!getOwner().getMap().isMoveable(direcao, getBoundsInParent())) return;
 		switch (direcao) {
 		case LEFT:
 			moverEsquerda();
